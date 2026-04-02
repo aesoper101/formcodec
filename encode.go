@@ -47,17 +47,11 @@ func (e *Encoder) Encode(v any) (map[string][]string, error) {
 		return nil, ErrInvalidValue
 	}
 
-	rv := reflect.ValueOf(v)
-	rt := rv.Type()
-
-	// Handle pointer
-	if rt.Kind() == reflect.Ptr {
-		if rv.IsNil() {
-			return nil, ErrInvalidValue
-		}
-		rv = rv.Elem()
-		rt = rv.Type()
+	rv := reflect.Indirect(reflect.ValueOf(v))
+	if !rv.IsValid() {
+		return nil, ErrInvalidValue
 	}
+	rt := rv.Type()
 
 	if rt.Kind() != reflect.Struct {
 		return nil, ErrNotStruct
@@ -80,18 +74,18 @@ func (e *Encoder) Encode(v any) (map[string][]string, error) {
 			continue
 		}
 
-		// 快速路径：无默认值时，零值跳过（保持原行为）
+		// Fast path: skip zero values when no default is specified (preserve original behavior)
 		if info.omitempty && !info.hasDefault && isZeroValue(fieldValue) {
 			continue
 		}
 
-		// 编码字段值
+		// Encode field value
 		values, err := e.encodeValue(fieldValue)
 		if err != nil {
 			return nil, fmt.Errorf("formcodec: error encoding field %s: %w", field.Name, err)
 		}
 
-		// 有默认值 + omitempty：值等于默认值时跳过
+		// With default + omitempty: skip when value equals default
 		if info.omitempty && info.hasDefault && slicesEqual(values, info.defaultValue) {
 			continue
 		}

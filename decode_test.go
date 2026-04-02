@@ -983,7 +983,7 @@ func TestDecode_DefaultValue(t *testing.T) {
 		type S struct {
 			Name string `form:"name,default=guest"`
 		}
-		data := map[string][]string{} // 无 name key
+		data := map[string][]string{} // no name key
 		var result S
 		err := Unmarshal(data, &result)
 		if err != nil {
@@ -1102,7 +1102,7 @@ func TestDecode_WithDecoderTagName(t *testing.T) {
 }
 
 func TestRoundTrip_DefaultValue(t *testing.T) {
-	// 测试带默认值的结构体 Marshal -> Unmarshal 一致性
+	// Test struct with default values: Marshal -> Unmarshal consistency
 	type S struct {
 		Name string   `form:"name,default=guest"`
 		Tags []string `form:"tags,default=go|web"`

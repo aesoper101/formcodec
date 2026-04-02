@@ -94,7 +94,7 @@ func (d *Decoder) decodeStruct(data map[string][]string, rv reflect.Value) error
 
 		values, ok := data[info.name]
 		if !ok || len(values) == 0 {
-			// 如果有默认值，使用默认值
+			// If default value is specified, use it
 			if info.hasDefault {
 				values = info.defaultValue
 			} else {
