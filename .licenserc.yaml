@@ -19,7 +19,7 @@ header:
 
   comment: on-failure
 
-  # If you don't want to check dependencies' license compatibility, remove the following part
-  dependency:
-    files:
-      - go.mod            # If this is a Go project.
+# If you don't want to check dependencies' license compatibility, remove the following part
+dependency:
+  files:
+    - go.mod            # If this is a Go project.
