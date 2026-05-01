@@ -14,10 +14,21 @@
 
 package formcodec
 
-// formEncoder is a global Encoder.
-var formEncoder = NewEncoder()
+import "sync"
+
+// encoderMap stores encoders for different tag names.
+var encoderMap sync.Map
 
 // Encode encodes a struct into a url.Values map.
-func Encode(v interface{}) (map[string][]string, error) {
-	return formEncoder.Encode(v)
+func Encode(v interface{}, opts ...EncoderOption) (map[string][]string, error) {
+	opt := defaultEncoderOptions()
+	for _, o := range opts {
+		o(&opt)
+	}
+	if encoder, ok := encoderMap.Load(opt.tagName); ok {
+		return encoder.(*Encoder).Encode(v)
+	}
+	encoder := NewEncoder(opts...)
+	encoderMap.Store(opt.tagName, encoder)
+	return encoder.Encode(v)
 }

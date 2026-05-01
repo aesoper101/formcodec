@@ -14,10 +14,21 @@
 
 package formcodec
 
-// formDecoder is a global Decoder.
-var formDecoder = NewDecoder()
+import "sync"
+
+// decoderMap stores decoders for different tag names.
+var decoderMap sync.Map
 
 // Decode decodes a map[string][]string into a struct.
-func Decode(data map[string][]string, v any) error {
-	return formDecoder.Decode(data, v)
+func Decode(data map[string][]string, v any, opts ...DecoderOption) error {
+	opt := defaultDecoderOptions()
+	for _, o := range opts {
+		o(&opt)
+	}
+	if decoder, ok := decoderMap.Load(opt.tagName); ok {
+		return decoder.(*Decoder).Decode(data, v)
+	}
+	d := NewDecoder(opts...)
+	decoderMap.Store(opt.tagName, d)
+	return d.Decode(data, v)
 }
