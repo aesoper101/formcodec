@@ -15,6 +15,7 @@
 package formcodec
 
 import (
+	"errors"
 	"sync"
 	"testing"
 )
@@ -55,7 +56,7 @@ func TestFormDecode_WithOptions(t *testing.T) {
 
 func TestFormDecode_ErrorNil(t *testing.T) {
 	resetDecoderMap()
-	if err := Decode(nil, nil); err != ErrNilPointer {
+	if err := Decode(nil, nil); !errors.Is(err, ErrNilPointer) {
 		t.Errorf("error = %v, want ErrNilPointer", err)
 	}
 }
@@ -64,7 +65,7 @@ func TestFormDecode_ErrorNonPointer(t *testing.T) {
 	resetDecoderMap()
 	type S struct{ Name string }
 	var s S
-	if err := Decode(nil, s); err != ErrNotPointer {
+	if err := Decode(nil, s); !errors.Is(err, ErrNotPointer) {
 		t.Errorf("error = %v, want ErrNotPointer", err)
 	}
 }
@@ -72,7 +73,7 @@ func TestFormDecode_ErrorNonPointer(t *testing.T) {
 func TestFormDecode_ErrorNilPointer(t *testing.T) {
 	resetDecoderMap()
 	var s *struct{ Name string }
-	if err := Decode(nil, s); err != ErrNilPointer {
+	if err := Decode(nil, s); !errors.Is(err, ErrNilPointer) {
 		t.Errorf("error = %v, want ErrNilPointer", err)
 	}
 }

@@ -15,6 +15,7 @@
 package formcodec
 
 import (
+	"errors"
 	"sync"
 	"testing"
 )
@@ -56,7 +57,7 @@ func TestFormEncode_WithOptions(t *testing.T) {
 func TestFormEncode_ErrorNil(t *testing.T) {
 	resetEncoderMap()
 	_, err := Encode(nil)
-	if err != ErrInvalidValue {
+	if !errors.Is(err, ErrInvalidValue) {
 		t.Errorf("error = %v, want ErrInvalidValue", err)
 	}
 }
@@ -65,7 +66,7 @@ func TestFormEncode_ErrorNilPointer(t *testing.T) {
 	resetEncoderMap()
 	var ptr *struct{ Name string }
 	_, err := Encode(ptr)
-	if err != ErrInvalidValue {
+	if !errors.Is(err, ErrInvalidValue) {
 		t.Errorf("error = %v, want ErrInvalidValue", err)
 	}
 }
@@ -73,7 +74,7 @@ func TestFormEncode_ErrorNilPointer(t *testing.T) {
 func TestFormEncode_ErrorNotStruct(t *testing.T) {
 	resetEncoderMap()
 	_, err := Encode(42)
-	if err != ErrNotStruct {
+	if !errors.Is(err, ErrNotStruct) {
 		t.Errorf("error = %v, want ErrNotStruct", err)
 	}
 }
